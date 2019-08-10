@@ -172,3 +172,6 @@ venv.bak/
 .mypy_cache/
 
 /.idea
+
+db_config.json
+config.json
