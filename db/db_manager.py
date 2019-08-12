@@ -33,10 +33,11 @@ def do(closure):
 
 def query(sql_closure, handle_closure):
     if conn:
-        cursor = conn.cursor
+        cursor = conn.cursor()
         sql_closure(cursor)
         rows = cursor.fetchall()
         handle_closure(rows)
+        conn.commit()
 
 
 def release():

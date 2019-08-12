@@ -10,3 +10,13 @@ CREATE TABLE rss_list
 
 INSERT INTO rss_list (name, url, updated)
 VALUES ('阡陌', 'http://xychen.me/feed', '');
+
+SELECT *
+FROM rss_list;
+
+DELETE
+FROM rss_list
+WHERE id = 4;
+
+DELETE
+FROM rss_list;
