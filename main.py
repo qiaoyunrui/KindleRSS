@@ -2,6 +2,8 @@ import json
 import sys
 import config.config_manager as config_manager
 import db.rss_table_manager as rss_table
+import db.db_manager as db_manager
+import core.rss_content_pull as rss_pull
 
 
 # d = feedparser.parse('http://xychen.me/feed')
@@ -17,6 +19,16 @@ def get_param(index):
     if len(sys.argv) <= index:
         return None
     return sys.argv[index]
+
+
+def start():
+    # 获取所有的 source 列表
+    rss_table.query_all_rss_source(lambda items:
+                                   rss_pull.start(list(map(
+                                       lambda item: {'id': item[0],
+                                                     'name': item[1],
+                                                     'url': item[2],
+                                                     'updated': item[3]}, items))))
 
 
 def handle_commend_params():
@@ -44,7 +56,14 @@ def handle_commend_params():
                 lambda items: [print("id: %s name: %s url: %s" % (item[0], item[1], item[2])) for item in
                                items])
             pass
-
+        else:
+            print("参数错误")
+            pass
+    elif get_param(1) == "config":
+        pass
+    elif get_param(1) == "start":
+        start()
+        pass
     else:
         print("开发中")
     pass
@@ -52,3 +71,4 @@ def handle_commend_params():
 
 if __name__ == "__main__":
     handle_commend_params()
+    db_manager.release()
