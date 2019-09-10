@@ -27,3 +27,9 @@ def remove_rss_source(id):
 
 def clear_rss_source():
     db_manager.do(lambda cursor: cursor.execute("DELETE FROM rss_list;"))
+
+
+def update_rss_source(rss_source):
+    sql = "UPDATE rss_list SET name = '%s', url = '%s', updated = '%s' WHERE id = %s;" % (
+        rss_source['name'], rss_source['url'], rss_source['updated'], rss_source['id'])
+    db_manager.do(lambda cursor: cursor.execute(sql))

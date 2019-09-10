@@ -6,7 +6,7 @@ import db.db_manager as db_manager
 import core.rss_content_pull as rss_pull
 
 
-# d = feedparser.parse('http://xychen.me/feed')
+# d = feedparser.parse('http://www.ruanyifeng.com/blog/atom.xml')
 
 # with open("rss.json", "w") as file:
 # file.write(json.dumps(d, ensure_ascii=False))

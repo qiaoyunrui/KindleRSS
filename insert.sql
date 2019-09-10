@@ -1,0 +1,1 @@
+INSERT INTO rss_content(id, source_id, author, title, summary, updated, link, content) VALUES ;
