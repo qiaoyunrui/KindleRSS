@@ -3,8 +3,10 @@ import json
 
 import threadpool
 import feedparser
-import db.rss_table_manager as rss_table
 import db.rss_content_table_manager as content_table
+import os
+import pdfkit
+import time
 
 from multiprocessing import cpu_count
 
@@ -27,11 +29,18 @@ def _dispatch_pull():
 
 
 def _handle_pull_result(rss_content, rss_source):
-    # todo json_handle function 存入数据库，计算差值，生成 html，生成对应格式，发送邮件
-    # 还要做好多啊
-    # 加油
-    # print("json\n", len(rss_content), "\nsource\n", rss_source)
-    _store_rss_content(rss_content, rss_source)
+    new_content_list = _store_rss_content(rss_content, rss_source)
+    if not new_content_list:  # 没有更新的文章
+        return
+    html_list = []
+    [html_list.append(_generate_html(content)) for content in new_content_list]
+    pdf_file_list = []
+    [pdf_file_list.append(_generate_pdf(html)) for html in html_list]
+
+    # todo 生成 pdf
+    # todo 发送邮件
+    # 先不删除 html
+    # 单独线程执行
     # if rss_content['updated'] == rss_source['updated']:
     #     print("[%s] 没有更新。" % (rss_source['name']))
     # else:  # 数据更新了
@@ -43,17 +52,34 @@ def _handle_pull_result(rss_content, rss_source):
 
 # 存储 rss 内容
 def _store_rss_content(rss_content, rss_source):
-    content_table.add_contents(rss_content['entries'], rss_source)
+    return content_table.add_contents(rss_content['entries'], rss_source)
 
 
 # 正文生成 HTML
+# 返回文件路径
 def _generate_html(entry):
-    pass
+    html = "<!DOCTYPE html><html lang=\"en\"><head><meta " \
+           "charset=\"UTF-8\"><title>%s</title></head><body>%s</body></html>" % (
+               entry['title'], entry['content'][0]['value'])
+    if not os.path.exists("./html"):
+        os.mkdir("./html")
+    file_name = "./html/%s.html" % (entry['title'])
+    with open(file_name, "w") as file:
+        file.write(html)
+        print("[Generate] ", file_name)
+    return [file_name, entry['title']]
 
 
-# 生成 Kindle 支持的文本
-def _generate_kindle_file(html):
-    pass
+# 生成 pdf
+# 返回文件路径
+def _generate_pdf(html):
+    if not os.path.exists("./pdf"):
+        os.mkdir("./pdf")
+    pdf_file_name = "./pdf/%s.pdf" % (html[1])
+    # 生成 PDF 文件
+    pdfkit.from_file(html[0], pdf_file_name)
+    print("[Generate] ", pdf_file_name)
+    return pdf_file_name
 
 
 # 向 Kindle 发送邮件

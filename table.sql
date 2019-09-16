@@ -49,4 +49,8 @@ SELECT count(id)
 FROM rss_content
 WHERE id = 'xxx';
 
-SELECT * FROM rss_content;
+SELECT *
+FROM rss_content;
+
+DELETE
+FROM rss_content;
