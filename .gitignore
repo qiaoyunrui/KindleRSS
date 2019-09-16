@@ -175,3 +175,6 @@ venv.bak/
 
 db_config.json
 config.json
+
+/html
+/pdf
